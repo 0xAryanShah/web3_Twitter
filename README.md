@@ -1,4 +1,4 @@
-=======
+======= For the Walkthrough of the Application [Screenshots](https://github.com/0xAryanShah/web3_Twitter/tree/master/Screenshots)
 # Web3 Twitter
 
 ## Technology Stack & Tools
