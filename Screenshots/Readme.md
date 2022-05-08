@@ -1,1 +1,1 @@
-<img "src =./Connect Wallet.png">
+<img src ="./Connect Wallet.png"/>
