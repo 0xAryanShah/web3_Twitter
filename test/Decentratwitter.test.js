@@ -47,6 +47,37 @@ describe("Decentratwitter", function () {
             .to.be.revertedWith("Only owners of the nft are allowed to set profile");
         });
     })
+    describe('Uploading posts', async () => {
+        it("Should track posts uploaded only by users who own an NFT", async function () {
+          // user1 uploads a post
+          await expect(decentratwitter.connect(user1).uploadPost(postHash))
+            .to.emit(decentratwitter, "PostCreated")
+            .withArgs(
+              1,
+              postHash,
+              0,
+              user1.address
+            )
+          const postCount = await decentratwitter.postCount()
+          expect(postCount).to.equal(1);
+          // Check from struct
+          const post = await decentratwitter.posts(postCount)
+          expect(post.id).to.equal(1)
+          expect(post.hash).to.equal(postHash)
+          expect(post.tipAmount).to.equal(0)
+          expect(post.author).to.equal(user1.address)
+          // FAIL CASE #1 //
+          // user 2 tried to upload a post without owning an nft
+          await expect(
+            decentratwitter.connect(user2).uploadPost(postHash)
+          ).to.be.revertedWith("Must own a 3itter nft to post");
+          // FAIL CASE #2 //
+          // user 1 tried to upload a post with an empty post hash.
+          await expect(
+            decentratwitter.connect(user1).uploadPost("")
+          ).to.be.revertedWith("Cannot pass an empty hash");
+        });
+    })
     describe('Tipping posts', async () => {
         it("Should allow users to tip posts and track each posts tip amount", async function () {
           // user1 uploads a post
@@ -81,7 +112,33 @@ describe("Decentratwitter", function () {
             decentratwitter.connect(user1).tipPostOwner(1)
           ).to.be.revertedWith("Cannot tip your own post");
         });
-      })
+    })
+    describe("Getter functions", function () {
+        let ownedByUser1 = [1, 2]
+        let ownedByUser2 = [3]
+        beforeEach(async function () {
+          // user 1 makes a post
+          await decentratwitter.connect(user1).uploadPost(postHash)
+          // user 1 mints another NFT
+          await decentratwitter.connect(user1).mint(URI)
+          // user 2 mints an NFT
+          await decentratwitter.connect(user2).mint(URI)
+          // user 2 makes a post
+          await decentratwitter.connect(user2).uploadPost(postHash)
+        })
+    
+        it("getAllPosts should fetch all the posts", async function () {
+          const allPosts = await decentratwitter.getAllPosts()
+          // Check that the length is correct
+          expect(allPosts.length).to.equal(2)
+        });
+        it("getMyNfts should fetch all nfts the user owns", async function () {
+          const user1Nfts = await decentratwitter.connect(user1).getMyNfts()
+          expect(user1Nfts.length).to.equal(2)
+          const user2Nfts = await decentratwitter.connect(user2).getMyNfts()
+          expect(user2Nfts.length).to.equal(1)
+        });
+    });
 
 });
 

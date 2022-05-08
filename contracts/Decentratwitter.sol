@@ -83,5 +83,11 @@ contract Decentratwitter is ERC721URIStorage {
             }
         }
     }
+    function getAllPosts() external view returns (Post[] memory _posts) {
+        _posts = new Post[](postCount);
+        for (uint256 i = 0; i < _posts.length; i++) {
+            _posts[i] = posts[i + 1];
+        }
+    }
 
 }
