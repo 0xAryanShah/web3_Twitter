@@ -60,5 +60,28 @@ contract Decentratwitter is ERC721URIStorage {
         posts[postCount]= Post(postCount,_postHash,0,payable(msg.sender));
         emit PostCreated(postCount,_postHash,0,payable(msg.sender));
     }
+    function tipPostOwner(uint256 _id) external payable {
+        // Make sure the id is valid
+        require(_id > 0 && _id <= postCount, "Invalid post id");
+        // Fetch the post
+        Post memory _post = posts[_id];
+        require(_post.author != msg.sender, "Cannot tip your own post");
+        _post.author.transfer(msg.value);
+        _post.tipAmount += msg.value;
+        // Update the image
+        posts[_id] = _post;
+        emit PostTipped(_id, _post.hash, _post.tipAmount, _post.author);
+    }
+    function getMyNfts() external view returns (uint256[] memory _ids) {
+        _ids = new uint256[](balanceOf(msg.sender));
+        uint256 currentIndex;
+        uint256 _tokenCount = tokenCount;
+        for (uint256 i = 0; i < _tokenCount; i++) {
+            if (ownerOf(i + 1) == msg.sender) {
+                _ids[currentIndex] = i + 1;
+                currentIndex++;
+            }
+        }
+    }
 
 }
