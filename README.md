@@ -1,4 +1,4 @@
-======= For the Walkthrough of the Application [Screenshots](https://github.com/0xAryanShah/web3_Twitter/tree/master/Screenshots)
+ =<h2>For the Walkthrough of the Application Please Look at [Screenshots](https://github.com/0xAryanShah/web3_Twitter/tree/master/Screenshots)</h2>
 # Web3 Twitter
 
 ## Technology Stack & Tools
